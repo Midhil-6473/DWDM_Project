@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="pageHead">
+  <h1>📊 Agricultural Analytics</h1>
+  <p>Explore trends, distributions, and top-performing crops across different states and seasons.</p>
+</div>
+
+<div class="analyticsFilters card glass">
+  <div class="grid4">
+    <label>State
+      <select id="stateFilter">
+        <option value="">All India</option>
+        {% for s in states %}<option value="{{s}}">{{s}}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Crop Type
+      <select id="cropFilter">
+        <option value="">All Crops</option>
+        {% for c in crops %}<option value="{{c}}">{{ crop_emoji[c] }} {{ c }}</option>{% endfor %}
+      </select>
+    </label>
+    <label>Season
+      <select id="seasonFilter">
+        <option value="">All Seasons</option>
+        {% for s in seasons %}<option value="{{s}}">{{s}}</option>{% endfor %}
+      </select>
+    </label>
+    <div class="filterBtnRow">
+      <button id="applyFilters" class="primary">Apply Filters</button>
+    </div>
+  </div>
+</div>
+
+<div class="statRow reveal">
+  <div class="card glass statCard">
+    <h3>Mean Yield</h3>
+    <div id="meanYield" class="bigYield glow-text">—</div>
+    <small>kg/ha</small>
+  </div>
+  <div class="card glass statCard">
+    <h3>Records Analyzed</h3>
+    <div id="recordCount" class="bigYield glow-text">—</div>
+    <small>data points</small>
+  </div>
+  <div class="card glass statCard">
+    <h3>Yield Stability</h3>
+    <div id="yieldStability" class="bigYield glow-text">—</div>
+    <small>min to max range</small>
+  </div>
+</div>
+
+<div class="analyticsGrid">
+  <div class="card glass reveal">
+    <h3>📈 Yield Distribution</h3>
+    <div id="yieldDistChart" class="chartArea"></div>
+  </div>
+  <div class="card glass reveal">
+    <h3>🥧 Yield Category Split</h3>
+    <div id="catPieChart" class="chartArea"></div>
+  </div>
+  <div class="card glass reveal fullWidth">
+    <h3>🏆 Top Performing Crops (Average Yield)</h3>
+    <div id="topCropsChart" class="chartArea"></div>
+  </div>
+</div>
+
+<script src="/static/js/analytics.js"></script>
+{% endblock %}

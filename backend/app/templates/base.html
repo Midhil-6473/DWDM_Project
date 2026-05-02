@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CropAI - Advanced Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css?v=3" />
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <script>
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+    }
+
+    function setCookie(name, value, days = 365) {
+      const d = new Date();
+      d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+      const expires = "expires=" + d.toUTCString();
+      document.cookie = name + "=" + value + ";" + expires + ";path=/";
+    }
+
+    (function() {
+      const theme = getCookie('app_theme') || 'dark';
+      document.documentElement.setAttribute('data-theme', theme);
+    })();
+  </script>
+</head>
+<body>
+  <div class="appShell">
+    <aside class="sidebar">
+      <div class="brand">🌾 CropCast</div>
+      <a id="navPredict" href="#" class="navItem">🔍 <span>Predict</span></a>
+      <a href="/analytics-view" class="navItem {{ 'active' if active_page == 'analytics' else '' }}">📊 <span>Analytics</span></a>
+      <a href="/batch" class="navItem {{ 'active' if active_page == 'batch' else '' }}">📂 <span>Batch Predict</span></a>
+      <a href="/chat" class="navItem {{ 'active' if active_page == 'chat' else '' }}">🤖 <span>Ask AI</span></a>
+
+      <div class="themeToggle">
+        <div style="display:flex; align-items:center; gap:10px; font-size:0.85rem; color:rgba(255,255,255,0.7);">
+          <span id="themeLabel">🌙 Dark</span>
+          <label class="switch">
+            <input type="checkbox" id="themeSwitch">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+    </aside>
+    <main class="mainContent">{% block content %}{% endblock %}</main>
+  <script>
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+    }
+
+    function setCookie(name, value, days = 365) {
+      const d = new Date();
+      d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+      const expires = "expires=" + d.toUTCString();
+      document.cookie = name + "=" + value + ";" + expires + ";path=/";
+    }
+
+    const themeSwitch = document.getElementById('themeSwitch');
+    const themeLabel = document.getElementById('themeLabel');
+    const currentTheme = getCookie('app_theme') || 'dark';
+
+    themeSwitch.checked = currentTheme === 'dark';
+    themeLabel.textContent = currentTheme === 'dark' ? '🌙 Dark' : '☀️ Light';
+
+    themeSwitch.addEventListener('change', function() {
+      const newTheme = this.checked ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      setCookie('app_theme', newTheme);
+      themeLabel.textContent = newTheme === 'dark' ? '🌙 Dark' : '☀️ Light';
+    });
+
+    // Handle Predict link
+    document.querySelectorAll('.navItem').forEach(el => {
+      if (el.textContent.includes('Predict')) {
+        el.href = `http://${window.location.hostname}:5200?dashboard=true`;
+      }
+    });
+  </script>
+  </div>
+</body>
+</html>

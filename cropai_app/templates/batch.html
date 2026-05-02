@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="pageHead">
+  <h1>📂 Batch Crop Yield Prediction</h1>
+  <p>Upload a CSV file with multiple field records and download predictions for all of them at once.</p>
+</div>
+
+<div class="stepper stepper3" id="stepper">
+  <span class="step active" data-step="1">Step 1 — Upload</span><span class="arr">→</span>
+  <span class="step" data-step="2">Step 2 — Preview</span><span class="arr">→</span>
+  <span class="step" data-step="3">Step 3 — Results</span>
+</div>
+
+<section class="card stepCard" id="step1">
+  <label class="uploadZone" id="uploadZone">
+    <input type="file" id="csvFile" accept=".csv" hidden />
+    <div class="uploadInner">
+      <div class="uploadIcon">📂</div>
+      <div class="uploadTitle">Drop your CSV file here or click to browse</div>
+      <div class="uploadSub">Accepted format: .csv · Max size: 50MB</div>
+    </div>
+  </label>
+  <div class="btnRow">
+    <a href="/api/batch/sample-template" class="buttonLike">⬇️ Download Sample CSV Template</a>
+    <button type="button" id="toggleCols" class="secondaryBtn">📋 View Required Columns</button>
+  </div>
+  <pre id="requiredCols" class="hidden colList"></pre>
+</section>
+
+<section class="card stepCard hidden" id="step2">
+  <h2>Preview &amp; validate</h2>
+  <div id="statCards" class="statRow"></div>
+  <div id="validationBox"></div>
+  <div class="tableWrap">
+    <table id="previewTable"><thead id="previewHead"></thead><tbody id="previewBody"></tbody></table>
+  </div>
+  <div class="btnRow">
+    <button type="button" class="primary" id="runBatch" disabled>🚀 Run Batch Predictions</button>
+  </div>
+  <div id="batchProgress" class="hidden progressLine">Running predictions…</div>
+</section>
+
+<section class="card stepCard hidden" id="step3">
+  <div id="resultSummary"></div>
+  <div id="metricCards" class="metricRow"></div>
+  <div class="chartGrid2" id="chartGrid"></div>
+  <div class="btnRow">
+    <label class="filterLbl">Histogram crop filter
+      <select id="histCropFilter"></select>
+    </label>
+  </div>
+  <h2>Results table</h2>
+  <div class="tableWrap wideTable">
+    <table id="resultTable"><thead id="resultHead"></thead><tbody id="resultBody"></tbody></table>
+  </div>
+  <div class="pagination" id="pagination"></div>
+  <a class="buttonLike primaryLink" id="downloadBtn" href="#">⬇️ Download Full Results as CSV</a>
+</section>
+
+<script src="/static/js/batch.js"></script>
+{% endblock %}

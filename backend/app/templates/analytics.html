@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="pageHead">
+  <h1><span class="emoji">📊</span> Crop Yield Analytics</h1>
+  <p>Explore patterns and insights from 2,20,000 real agricultural records</p>
+</div>
+
+<!-- Filters Bar -->
+<div class="glass" style="padding: 24px; border-radius: 20px; margin-bottom: 40px; display: flex; gap: 20px; align-items: flex-end; flex-wrap: wrap;">
+  <div class="field" style="flex: 1; min-width: 200px;">
+    <label style="font-weight: 700; display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-muted);">Filter by Crop</label>
+    <select id="filterCrop" style="width: 100%;"></select>
+  </div>
+  <div class="field" style="flex: 1; min-width: 200px;">
+    <label style="font-weight: 700; display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-muted);">Filter by Season</label>
+    <select id="filterSeason" style="width: 100%;"></select>
+  </div>
+  <div class="field" style="flex: 1; min-width: 200px;">
+    <label style="font-weight: 700; display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-muted);">Filter by State</label>
+    <select id="filterState" style="width: 100%;"></select>
+  </div>
+  <div id="recordCount" style="font-size: 0.85rem; color: var(--text-muted); width: 100%; margin-top: 10px;">
+    Loading records...
+  </div>
+</div>
+
+<div class="analyticsGrid" style="display: grid; grid-template-columns: 1fr; gap: 40px;">
+  
+  <!-- Graph 1: NPK Impact -->
+  <section class="chartBox glass reveal visible">
+    <h2>How NPK Levels Affect Yield per Crop</h2>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+      Each bar shows the average yield when that nutrient is in Low, Medium, or High range.
+    </p>
+    <div style="margin-bottom: 20px; display: flex; gap: 15px; align-items: center;">
+      <span style="font-size: 0.9rem; font-weight: 600;">Select nutrient:</span>
+      <label><input type="radio" name="npkNutrient" value="N_kgha" checked> Nitrogen (N)</label>
+      <label><input type="radio" name="npkNutrient" value="P_kgha"> Phosphorus (P)</label>
+      <label><input type="radio" name="npkNutrient" value="K_kgha"> Potassium (K)</label>
+    </div>
+    <div id="chartNPK" style="height: 450px;"></div>
+    <div id="insightNPK" class="infoBox" style="display: none;"></div>
+  </section>
+
+  <!-- Graph 2: Rainfall vs Yield -->
+  <section class="chartBox glass reveal visible">
+    <h2>Rainfall vs Yield — Is Your Rainfall Sufficient?</h2>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+      The green shaded band shows the optimal rainfall range for the selected crop.
+    </p>
+    <div id="chartRainfall" style="height: 480px;"></div>
+    <div id="insightRainfall" class="infoBox" style="display: none;"></div>
+  </section>
+
+  <!-- Graph 3: Heatmap -->
+  <section class="chartBox glass reveal visible">
+    <h2>Which State-Season Combination Gives the Best Yield?</h2>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+      Dark green = highest average yield. Use this to find the best region and time.
+    </p>
+    <div id="chartHeatmap" style="height: 500px;"></div>
+    <div id="insightHeatmap" class="successBox" style="display: none;"></div>
+  </section>
+
+  <!-- Graph 4: Pest & Disease -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+    <section class="chartBox glass reveal visible">
+      <h3>Pest Impact on Yield</h3>
+      <div id="chartPest" style="height: 380px;"></div>
+      <div id="insightPest" class="errorBox" style="display: none;"></div>
+    </section>
+    <section class="chartBox glass reveal visible">
+      <h3>Disease Impact on Yield</h3>
+      <div id="chartDisease" style="height: 380px;"></div>
+      <div id="insightDisease" class="errorBox" style="display: none;"></div>
+    </section>
+  </div>
+
+  <!-- Graph 5: Feature Importance -->
+  <section class="chartBox glass reveal visible">
+    <h2>What Matters Most for Crop Yield? (Random Forest)</h2>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+      Higher % = more influence. Focus on the tallest bars to improve your yield first.
+    </p>
+    <div id="chartImportance" style="height: 480px;"></div>
+    <div style="display: flex; gap: 20px; font-size: 0.85rem; margin-top: 15px; justify-content: center;">
+      <span>🟢 Soil Nutrients</span>
+      <span>🔵 Climate & Season</span>
+      <span>🟡 Crop Selection</span>
+    </div>
+    <div id="insightImportance" class="infoBox" style="margin-top: 20px;">
+      💡 <strong>Key Insight:</strong> NPK nutrients together account for ~35% of prediction importance — the most controllable factors.
+    </div>
+  </section>
+
+  <!-- Graph 6: Yield Trend -->
+  <section class="chartBox glass reveal visible">
+    <h2>Is Yield Improving Over Time? (2000–2023)</h2>
+    <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+      Upward trends confirm that modern practices are working for these crops.
+    </p>
+    <div style="margin-bottom: 20px;">
+      <label style="font-weight: 700; display: block; margin-bottom: 8px; font-size: 0.9rem;">Select crops to compare:</label>
+      <div id="trendCrops" style="display: flex; flex-wrap: wrap; gap: 10px;"></div>
+    </div>
+    <div id="chartTrend" style="height: 450px;"></div>
+    <div id="metricsTrend" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 24px;"></div>
+  </section>
+
+</div>
+
+<style>
+  .chartBox h2, .chartBox h3 { margin-top: 0; }
+  .infoBox, .successBox, .errorBox { padding: 16px; border-radius: 12px; font-size: 0.9rem; margin-top: 15px; }
+  .infoBox { background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); color: #3b82f6; }
+  .successBox { background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); color: #22c55e; }
+  .errorBox { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; }
+  
+  .metric { padding: 12px; border-radius: 12px; border: 1px solid var(--border); background: rgba(255,255,255,0.02); }
+  .metric-val { font-size: 1.1rem; font-weight: 800; margin: 4px 0; }
+  .metric-label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+  .metric-delta { font-size: 0.8rem; font-weight: 700; }
+  .metric-delta.up { color: #22c55e; }
+  .metric-delta.down { color: #ef4444; }
+</style>
+
+<script src="/static/js/analytics.js?v=2"></script>
+{% endblock %}

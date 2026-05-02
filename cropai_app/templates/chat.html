@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="pageHead">
+  <h1>🤖 Ask CropAI</h1>
+  <p>Ask anything about crop yield, soil health, fertilizers, irrigation, or your prediction results.</p>
+</div>
+<div class="chatLayout">
+  <section class="chatMain">
+    <div id="chatHistory" class="chatHistory"></div>
+    <div class="btnRow">
+      <button id="clearChat">🗑️ Clear Chat</button>
+      <button id="exportChat">📥 Export Chat</button>
+      <button id="newSession">🔄 New Session</button>
+    </div>
+    <div class="chatInput">
+      <input id="chatInput" placeholder="Ask about your prediction, crop advice, soil health, fertilizers..." />
+      <button id="sendChat" class="primary">Send</button>
+    </div>
+  </section>
+  <aside class="chatSide">
+    <h3>📊 Last Prediction Context</h3>
+    <div id="contextCard"></div>
+    <div id="chips" class="chipWrap"></div>
+  </aside>
+</div>
+<script src="/static/js/chat.js"></script>
+{% endblock %}

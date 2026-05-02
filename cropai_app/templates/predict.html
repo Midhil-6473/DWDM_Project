@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="pageHead">
+  <h1>🌾 CropCast</h1>
+  <p>Enter your field details below to predict yield instantly using machine learning.</p>
+  <div id="seasonWarning" class="warnBanner hidden"></div>
+</div>
+
+<div class="predictLayout">
+  <section class="leftCol">
+    <form id="predictForm">
+      <details open><summary>🌱 Crop and Field Information</summary>
+        <div class="detailsContent">
+          <div class="grid2">
+            <label>Crop Type
+              <select name="Crop_Type" id="Crop_Type">{% for c in crops %}<option value="{{c}}">{{ crop_emoji[c] }} {{ c }}</option>{% endfor %}</select>
+            </label>
+            <label>Season
+              <select name="Season" id="Season">{% for s in seasons %}<option value="{{s}}">{{s}}</option>{% endfor %}</select>
+            </label>
+            <label>State
+              <select name="State">{% for s in states %}<option value="{{s}}">{{s}}</option>{% endfor %}</select>
+            </label>
+            <label>Irrigation
+              <select name="Irrigation_Method">{% for v in irrigation %}<option value="{{v}}">{{v}}</option>{% endfor %}</select>
+            </label>
+            <label>Fertilizer Type
+              <select name="Fertilizer_Type">{% for v in fertilizers %}<option value="{{v}}">{{v}}</option>{% endfor %}</select>
+            </label>
+          </div>
+        </div>
+      </details>
+
+      <details open><summary>🌤️ Climate and Weather</summary>
+        <div class="detailsContent">
+          <div class="climateSplit">
+            <div class="grid2">
+              {% for n,minv,maxv,step in [("Avg_Temp_C",2,45,0.5),("Rainfall_mm",0,500,1),("Humidity_Pct",20,98,1)] %}
+              <label>{{ n }} <input type="range" name="{{n}}" min="{{minv}}" max="{{maxv}}" step="{{step}}" value="{{(minv+maxv)/2}}" class="slider" /><span class="value"></span><small class="tip" data-feature="{{n}}"></small></label>
+              {% endfor %}
+            </div>
+            <div class="grid2">
+              {% for n,minv,maxv,step in [("Solar_Radiation_MJm2",12,28,0.1),("Wind_Speed_kmh",0,32,0.1),("Max_Temp_C",5,52,0.5),("Min_Temp_C",-6,40,0.5)] %}
+              <label>{{ n }} <input type="range" name="{{n}}" min="{{minv}}" max="{{maxv}}" step="{{step}}" value="{{(minv+maxv)/2}}" class="slider" /><span class="value"></span><small class="tip" data-feature="{{n}}"></small></label>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <details open><summary>🪨 Soil Properties</summary>
+        <div class="detailsContent">
+          <div class="climateSplit">
+            <div class="grid2">
+              <label>Soil Type
+                <select name="Soil_Type">{% for v in soil_types %}<option value="{{v}}">{{v}}</option>{% endfor %}</select>
+              </label>
+              {% for n,minv,maxv,step in [("Soil_pH",4.5,9,0.1),("Soil_Moisture_Pct",10,85,1)] %}
+              <label>{{ n }} <input type="range" name="{{n}}" min="{{minv}}" max="{{maxv}}" step="{{step}}" value="{{(minv+maxv)/2}}" class="slider" /><span class="value"></span><small class="tip" data-feature="{{n}}"></small></label>
+              {% endfor %}
+            </div>
+            <div class="grid2">
+              {% for n,minv,maxv,step in [("Organic_Carbon_Pct",0.1,3.5,0.05),("Bulk_Density_gcm3",0.9,1.8,0.01)] %}
+              <label>{{ n }} <input type="range" name="{{n}}" min="{{minv}}" max="{{maxv}}" step="{{step}}" value="{{(minv+maxv)/2}}" class="slider" /><span class="value"></span><small class="tip" data-feature="{{n}}"></small></label>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <details open><summary>🧪 Nutrients and Stress</summary>
+        <div class="detailsContent">
+          <div class="climateSplit">
+            <div class="grid2">
+              {% for n,minv,maxv,step in [("Water_Stress_Index",0,1.0,0.01),("N_kgha",0,300,1),("P_kgha",0,150,1),("K_kgha",0,241,1),("Sulfur_kgha",0,60,0.5)] %}
+              <label>{{ n }} <input type="range" name="{{n}}" min="{{minv}}" max="{{maxv}}" step="{{step}}" value="{{(minv+maxv)/2}}" class="slider" /><span class="value"></span><small class="tip" data-feature="{{n}}"></small></label>
+              {% endfor %}
+            </div>
+            <div class="grid2">
+              {% for n,minv,maxv,step in [("Zinc_ppm",0,6.5,0.1),("Iron_ppm",0,30,0.5),("NDVI",0.1,0.95,0.01)] %}
+              <label>{{ n }} <input type="range" name="{{n}}" min="{{minv}}" max="{{maxv}}" step="{{step}}" value="{{(minv+maxv)/2}}" class="slider" /><span class="value"></span><small class="tip" data-feature="{{n}}"></small></label>
+              {% endfor %}
+              <label>Pest Incidence <select name="Pest_Incidence">{% for v in incidence_levels %}<option value="{{v}}">{{v}}</option>{% endfor %}</select></label>
+              <label>Disease Incidence <select name="Disease_Incidence">{% for v in incidence_levels %}<option value="{{v}}">{{v}}</option>{% endfor %}</select></label>
+            </div>
+          </div>
+        </div>
+      </details>
+
+      <div class="btnRow">
+        <button type="submit" class="primary">🔍 Predict Yield</button>
+        <button type="button" id="fillOptimal">🔄 Fill Optimal Values for Selected Crop</button>
+      </div>
+      <details>
+        <summary>🔬 Live Yield Simulator</summary>
+        <div class="detailsContent">
+          <p>Adjust any slider to instantly see how it affects your predicted yield without re-running the full prediction.</p>
+          <div id="liveYield">Base yield: — | Current: —</div>
+        </div>
+      </details>
+      <details id="compareSection">
+        <summary>🔄 Compare with Another Crop</summary>
+        <div class="detailsContent">
+          <p class="hintInline">Uses the same field conditions — only crop type changes.</p>
+          <div class="btnRow">
+            <select id="compareCrop">{% for c in crops %}<option value="{{c}}">{{ crop_emoji[c] }} {{ c }}</option>{% endfor %}</select>
+            <button type="button" id="runCompare">Compare</button>
+          </div>
+          <div id="compareResult"></div>
+        </div>
+      </details>
+    </form>
+  </section>
+
+  <section class="rightCol" id="resultPanel">
+    <div class="placeholder">👈 Fill in your field details and click Predict Yield to see results here.</div>
+  </section>
+</div>
+
+<script>
+window.CROP_CONSTANTS = {{ optimal_preset | tojson }};
+window.SEASON_RULES = {{ season_rules | tojson }};
+window.SEASON_WARN_DETAIL = {{ season_warn_detail | tojson }};
+window.OPTIMAL_RANGES = {{ optimal_ranges | tojson }};
+</script>
+<script src="/static/js/predict.js"></script>
+{% endblock %}

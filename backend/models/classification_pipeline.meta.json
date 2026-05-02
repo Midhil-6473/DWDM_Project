@@ -1,0 +1,20 @@
+{
+  "feature_columns": [
+    "Season",
+    "State",
+    "Crop_Type",
+    "Soil_Type",
+    "Irrigation_Method",
+    "Fertilizer_Type",
+    "Avg_Temp_C",
+    "Rainfall_mm",
+    "Humidity_Pct",
+    "Water_Stress_Index",
+    "Soil_pH",
+    "N_kgha",
+    "P_kgha",
+    "K_kgha",
+    "NDVI"
+  ],
+  "max_train_rows": 80000
+}
